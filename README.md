@@ -1,113 +1,83 @@
-# CollegeVote — College Election Management System
+# CollegeVote
 
-A secure, transparent, and responsive web-based election management application designed for college student council elections. Built with **Node.js**, **MySQL**, and modern vanilla web standards.
+A web-based election management system for college student council elections. The application uses a static HTML/CSS/JavaScript frontend, Node.js serverless API routes, and MySQL/MariaDB.
 
----
+## Features
 
-## 🌟 Key Features
+- Student sign-in and candidate browsing
+- Confidential ballots with one-vote-per-student enforcement
+- Admin tools for elections, candidates, and student accounts
+- Election results, turnout metrics, and winner/tie detection
+- Responsive interface for desktop and mobile
 
-* **Student Voting Portal**:
-  * Secure student login with Student ID and encrypted passwords (bcrypt).
-  * Candidate profile browser displaying manifestos, departments, and contesting positions.
-  * Confidential ballot submission with double-confirmation screen.
-  * **Strict One Student, One Vote**: Enforced at application and database schema level (unique composite constraint `(election_id, student_id)`) to completely block duplicate votes.
+## Stack
 
-* **Administrator Control Center**:
-  * Real-time metrics: voter turnout percentage, total votes cast, candidate count, active students.
-  * Full Election Lifecycle: Create elections, edit parameters, open voting, and close voting.
-  * Candidate Management: Add, edit, or remove candidate profiles and manifestos.
-  * Student Roster: Search students, add students, edit details, and activate/deactivate accounts.
+- **Frontend:** HTML, CSS, and vanilla JavaScript
+- **API:** Node.js serverless functions compatible with Vercel
+- **Database:** MySQL or MariaDB
+- **Authentication:** HTTP-only cookie sessions and bcrypt password hashes
 
-* **Live & Certified Results**:
-  * Interactive candidate vote breakdown with proportional progress bars and percentages.
-  * Automated winner declaration and tie-breaker detection.
-  * Configurable visibility (live during voting or released after election close).
+## Local setup
 
----
+1. Install Node.js 18 or newer and start MySQL/MariaDB.
+2. Create the database using the included SQL files:
 
-## 🏗️ Tech Stack
-
-* **Frontend**: HTML5, Vanilla CSS3 (Custom Design System, Responsive, Mobile-friendly), Vanilla JavaScript (ES6+ async/await).
-* **Backend**: Node.js, Vercel Serverless Functions (`api/**/*.js`).
-* **Database**: MySQL / MariaDB (XAMPP compatible).
-* **Authentication**: Cookie-based sessions with UUID tokens and bcrypt password hashing.
-
----
-
-## 🚀 Quick Start (Local Setup with XAMPP)
-
-### 1. Prerequisites
-* **Node.js** (v18+)
-* **XAMPP** (with MySQL started on port `3306`)
-* **Git**
-
-### 2. Database Setup
-1. Start MySQL in your XAMPP Control Panel.
-2. Import the schema and seed data into MySQL:
    ```bash
    mysql -u root < database/schema.sql
    mysql -u root < database/seed.sql
    ```
 
-### 3. Installation & Run
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/GIRITECHY/CollegeVote-College-Election-Management-System.git
-   cd CollegeVote-College-Election-Management-System
-   ```
-2. Install dependencies:
+3. Copy `.env.example` to `.env` and set the database credentials and a session secret.
+4. Install dependencies and start the local app:
+
    ```bash
    npm install
-   ```
-3. Start the application:
-   ```bash
    npm start
    ```
-4. Open your browser at: **`http://localhost:3000`**
 
----
+5. Visit `http://localhost:3000`.
 
-## 🔑 Demo Credentials
+The local server serves files from `public/` and dispatches `/api/*` requests to the same handlers used by Vercel.
 
-| Role | Portal URL | Username / ID | Password |
-| :--- | :--- | :--- | :--- |
-| **Student** | `/student-login.html` | `STU001` (or `STU002` - `STU005`) | `student123` |
-| **Admin** | `/admin-login.html` | `admin` | `admin123` |
+## Demo accounts
 
----
+| Role | Page | Username / ID | Password |
+| --- | --- | --- | --- |
+| Student | `/student-login.html` | `STU001`–`STU005` | `student123` |
+| Admin | `/admin-login.html` | `admin` | `admin123` |
 
-## 📁 Project Structure
+Change demo credentials before using a deployed instance.
 
-```
+## Project structure
+
+```text
 CollegeVote/
-├── api/                   # Backend Serverless API endpoints
-│   ├── auth/              # Login, logout, session check
-│   ├── students/          # Student management & profile
-│   ├── candidates/        # Candidate management
-│   ├── elections/         # Election lifecycle (open/close)
-│   ├── votes/             # Transactional vote submission
-│   ├── results/           # Election results & metrics
-│   └── health.js          # API & database health probe
-├── css/
-│   └── style.css          # Design system & responsive styles
-├── database/
-│   ├── schema.sql         # Database tables & constraints
-│   └── seed.sql           # Demo accounts & elections
-├── js/
-│   ├── admin.js           # Admin portal logic
-│   ├── auth.js            # Login/logout handlers
-│   ├── common.js          # Utilities, badges, and API client
-│   ├── results.js         # Results calculation & rendering
-│   ├── student.js         # Student dashboard & candidate list
-│   └── voting.js          # Ballot submission flow
-├── lib/                   # Backend utilities (DB pool, auth, validation)
-├── local-server.js        # Local dev server
-├── vercel.json            # Vercel deployment configuration
-├── package.json           # Project metadata & dependencies
-└── *.html                 # Application pages
+├── api/                    # Vercel serverless API routes
+│   ├── auth/               # Sign-in, sign-out, and session routes
+│   ├── candidates/         # Candidate list and management
+│   ├── elections/          # Election list and lifecycle
+│   ├── results/            # Election result data
+│   ├── students/           # Student roster and profile
+│   ├── votes/              # Ballot submission
+│   └── health.js           # Database health endpoint
+├── database/               # Database schema and demo seed data
+├── lib/                    # Shared database, authentication, validation
+├── public/                 # Deployable static frontend
+│   ├── assets/
+│   │   ├── css/style.css
+│   │   └── js/              # Page-specific frontend modules and shared helpers
+│   └── *.html               # Application pages
+├── scripts/
+│   └── local-server.js      # Local static and API development server
+├── .env.example
+├── package.json
+└── vercel.json
 ```
 
----
+## Deployment
 
-## 📄 License
-ISC License &copy; 2026. Built for Academic Web Technologies Project.
+Deploy the repository with Vercel and configure the database and session environment variables in the project settings. Vercel serves the frontend from `public/` and discovers API handlers under `api/`.
+
+## License
+
+ISC License © 2026. Built for an Academic Web Technologies Project.

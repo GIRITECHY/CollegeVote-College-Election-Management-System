@@ -3,4 +3,4 @@
 .env.*
 database/
 tests/
-local-server.js
+scripts/

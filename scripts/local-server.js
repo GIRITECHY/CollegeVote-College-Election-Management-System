@@ -1,4 +1,3 @@
-// server.js
 // Local development server for CollegeVote
 // Serves static frontend assets and executes Vercel-compatible serverless functions
 
@@ -7,8 +6,12 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const PUBLIC_ROOT = path.join(PROJECT_ROOT, 'public');
+const projectPath = (...segments) => path.join(PROJECT_ROOT, ...segments);
+
 // Load environment variables from .env
-const envPath = path.join(__dirname, '.env');
+const envPath = projectPath('.env');
 if (fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, 'utf8');
     envContent.split(/\r?\n/).forEach(line => {
@@ -47,39 +50,39 @@ function getApiHandler(pathname) {
     if (parts[0] !== 'api') return null;
 
     if (parts.length === 2 && parts[1] === 'health') {
-        return require('./api/health');
+        return require(projectPath('api/health'));
     }
 
     if (parts[1] === 'auth') {
         const action = parts[2];
-        if (action === 'student-login') return require('./api/auth/student-login');
-        if (action === 'admin-login') return require('./api/auth/admin-login');
-        if (action === 'logout') return require('./api/auth/logout');
-        if (action === 'me') return require('./api/auth/me');
+        if (action === 'student-login') return require(projectPath('api/auth/student-login'));
+        if (action === 'admin-login') return require(projectPath('api/auth/admin-login'));
+        if (action === 'logout') return require(projectPath('api/auth/logout'));
+        if (action === 'me') return require(projectPath('api/auth/me'));
     }
 
     if (parts[1] === 'students') {
-        if (parts.length === 2) return require('./api/students/index');
-        if (parts[2] === 'me') return require('./api/students/me');
-        return require('./api/students/[id]');
+        if (parts.length === 2) return require(projectPath('api/students/index'));
+        if (parts[2] === 'me') return require(projectPath('api/students/me'));
+        return require(projectPath('api/students/[id]'));
     }
 
     if (parts[1] === 'candidates') {
-        if (parts.length === 2) return require('./api/candidates/index');
-        return require('./api/candidates/[id]');
+        if (parts.length === 2) return require(projectPath('api/candidates/index'));
+        return require(projectPath('api/candidates/[id]'));
     }
 
     if (parts[1] === 'elections') {
-        if (parts.length === 2) return require('./api/elections/index');
-        return require('./api/elections/[id]');
+        if (parts.length === 2) return require(projectPath('api/elections/index'));
+        return require(projectPath('api/elections/[id]'));
     }
 
     if (parts[1] === 'votes') {
-        return require('./api/votes/index');
+        return require(projectPath('api/votes/index'));
     }
 
     if (parts[1] === 'results') {
-        return require('./api/results/[id]');
+        return require(projectPath('api/results/[id]'));
     }
 
     return null;
@@ -128,8 +131,10 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Prevent directory traversal attacks
-    const safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
-    const filePath = path.join(__dirname, safePath);
+    const filePath = path.resolve(PUBLIC_ROOT, `.${pathname}`);
+    if (filePath !== PUBLIC_ROOT && !filePath.startsWith(`${PUBLIC_ROOT}${path.sep}`)) {
+        return res.status(403).end('Forbidden');
+    }
 
     fs.stat(filePath, (err, stats) => {
         if (err || !stats.isFile()) {
@@ -137,7 +142,7 @@ const server = http.createServer(async (req, res) => {
             res.end(`
                 <!DOCTYPE html>
                 <html>
-                <head><title>404 Not Found</title><link rel="stylesheet" href="/css/style.css"></head>
+                <head><title>404 Not Found</title><link rel="stylesheet" href="/assets/css/style.css"></head>
                 <body style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;">
                     <div>
                         <h1 style="font-size:3rem;margin-bottom:8px;">404</h1>

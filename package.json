@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "CollegeVote - College Election Management System",
   "scripts": {
-    "start": "node local-server.js",
-    "dev": "node local-server.js",
+    "start": "node scripts/local-server.js",
+    "dev": "node scripts/local-server.js",
     "vercel:dev": "vercel dev",
     "test": "node -e \"const { testConnection } = require('./lib/db'); testConnection().then(c => { console.log('DB OK:', c); process.exit(c ? 0 : 1); });\""
   },
