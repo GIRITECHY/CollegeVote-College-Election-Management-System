@@ -45,7 +45,7 @@ const MIME_TYPES = {
 };
 
 // Route matching for API handlers
-function getApiHandler(pathname) {
+function getApiHandler(pathname, req) {
     const parts = pathname.split('/').filter(Boolean); // e.g. ['api', 'students', '1']
     if (parts[0] !== 'api') return null;
 
@@ -55,10 +55,10 @@ function getApiHandler(pathname) {
 
     if (parts[1] === 'auth') {
         const action = parts[2];
-        if (action === 'student-login') return require(projectPath('api/auth/student-login'));
-        if (action === 'admin-login') return require(projectPath('api/auth/admin-login'));
-        if (action === 'logout') return require(projectPath('api/auth/logout'));
-        if (action === 'me') return require(projectPath('api/auth/me'));
+        if (action) {
+            req.query.action = action;
+            return require(projectPath('api/auth/[action]'));
+        }
     }
 
     if (parts[1] === 'students') {
@@ -109,7 +109,7 @@ const server = http.createServer(async (req, res) => {
 
     // Check if it's an API request
     if (pathname.startsWith('/api/')) {
-        const handler = getApiHandler(pathname);
+        const handler = getApiHandler(pathname, req);
         if (handler) {
             try {
                 await handler(req, res);
