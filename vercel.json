@@ -1,4 +1,8 @@
 {
+  "rewrites": [
+    { "source": "/api/elections/:id/open", "destination": "/api/elections/[id]" },
+    { "source": "/api/elections/:id/close", "destination": "/api/elections/[id]" }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
