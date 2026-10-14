@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollegeVote — College Election Management System</title>
+    <meta name="description" content="A secure, transparent web-based election management and voting platform for college student councils.">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%3E<text y=%2226%22 font-size=%2224%22>🗳️</text></svg>">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🗳️</span> CollegeVote
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <div class="navbar-nav">
+                <a href="/index.html" class="active">Home</a>
+                <a href="/student-login.html">Student Login</a>
+                <a href="/admin-login.html">Admin Login</a>
+                <a href="#election-section">Live Election</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h1>College Election Management System</h1>
+                <p>A secure, transparent, and modern digital voting system for student council elections. Vote securely and track results in real-time.</p>
+                <div class="btn-group">
+                    <a href="/student-login.html" class="btn btn-primary btn-lg">Student Portal & Vote</a>
+                    <a href="/admin-login.html" class="btn btn-secondary btn-lg">Admin Control Center</a>
+                </div>
+            </section>
+
+            <!-- Current / Upcoming Election Card -->
+            <section id="election-section" class="election-info mb-24">
+                <h2>Active Elections</h2>
+                <div id="home-election-container">
+                    <div class="loading"><p>Loading current elections...</p></div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="stats-grid mb-24">
+                <div class="stat-card primary">
+                    <div class="stat-label">Security & Integrity</div>
+                    <h3 style="font-size: 1.1rem; margin: 8px 0 4px;">One Student, One Vote</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Enforced at both application and database level to prevent duplicate voting.</p>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">Transparency</div>
+                    <h3 style="font-size: 1.1rem; margin: 8px 0 4px;">Audited & Accurate</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Instant vote tallying and tamper-proof candidate vote distribution.</p>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Access Control</div>
+                    <h3 style="font-size: 1.1rem; margin: 8px 0 4px;">Role-Based Portals</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Dedicated encrypted workflows for students and election administrators.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p><strong>CollegeVote</strong> — College Election Management System &copy; 2026. Built with Node.js & MySQL.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadHomeElections() {
+            var container = document.getElementById('home-election-container');
+            var result = await apiRequest('/api/elections');
+
+            if (!result.ok || !result.data.success || !result.data.elections || result.data.elections.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No active or scheduled elections at this time.</p></div>';
+                return;
+            }
+
+            var elections = result.data.elections;
+            var html = '<div style="display: flex; flex-direction: column; gap: 16px;">';
+
+            elections.forEach(function(e) {
+                html += `
+                    <div class="card">
+                        <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                    <h3 style="font-size: 1.15rem; margin: 0;">${escapeHtml(e.title)}</h3>
+                                    ${statusBadge(e.status)}
+                                </div>
+                                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 6px;">${escapeHtml(e.description || 'College Council Election')}</p>
+                                <p style="font-size: 0.8rem; color: var(--text-light); margin: 0;">
+                                    <strong>Schedule:</strong> ${formatDateTime(e.start_time)} — ${formatDateTime(e.end_time)} · 
+                                    <strong>Candidates:</strong> ${e.candidateCount || 0}
+                                </p>
+                            </div>
+                            <div class="btn-group">
+                                ${e.status === 'open' ? `<a href="/student-login.html" class="btn btn-primary">Login to Vote</a>` : ''}
+                                <a href="/results.html?election_id=${e.id}" class="btn btn-secondary">View Results</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadHomeElections);
+    </script>
+</body>
+</html>

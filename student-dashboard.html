@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard — CollegeVote</title>
+    <meta name="description" content="Student voting portal and election status overview.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🗳️</span> CollegeVote
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <div class="navbar-nav">
+                <a href="/student-dashboard.html" class="active">Dashboard</a>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <!-- Student Header Profile Card -->
+            <div class="card mb-24" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe;">
+                <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary);">Registered Student Profile</div>
+                        <h1 id="student-name" style="font-size: 1.5rem; margin: 4px 0 6px; color: var(--text-primary);">Loading profile...</h1>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                            <strong>ID:</strong> <span id="student-id-display">-</span> &nbsp;|&nbsp; 
+                            <strong>Department:</strong> <span id="student-department">-</span>
+                        </p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge badge-active" style="padding: 6px 14px; font-size: 0.8rem;">Eligible to Vote</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Election Details Section -->
+            <div id="election-info">
+                <div class="card mb-24">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 1rem; font-weight: 600;">Current Election</span>
+                        <span id="election-status"><span class="badge badge-draft">Loading...</span></span>
+                    </div>
+                    <div class="card-body">
+                        <h2 id="election-title" style="font-size: 1.3rem; margin-bottom: 12px; color: var(--text-primary);">-</h2>
+
+                        <div class="stats-grid" style="margin-bottom: 20px;">
+                            <div class="stat-card" style="padding: 14px;">
+                                <div class="stat-label">Start Time</div>
+                                <div id="election-start" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">-</div>
+                            </div>
+                            <div class="stat-card" style="padding: 14px;">
+                                <div class="stat-label">End Time</div>
+                                <div id="election-end" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">-</div>
+                            </div>
+                            <div class="stat-card" style="padding: 14px;">
+                                <div class="stat-label">Your Vote Status</div>
+                                <div id="vote-status" style="margin-top: 4px;">
+                                    <span class="badge badge-draft">Checking...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="vote-action" style="padding-top: 10px; border-top: 1px solid var(--border);">
+                            <div class="loading"><p>Checking your election status...</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voting Guidelines Card -->
+            <div class="card">
+                <div class="card-header">Voting Guidelines</div>
+                <div class="card-body" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;">
+                    <ul style="padding-left: 20px; margin: 0;">
+                        <li>Each registered student is entitled to cast <strong>exactly one vote</strong> per election.</li>
+                        <li>Votes cannot be modified, re-cast, or withdrawn once confirmed.</li>
+                        <li>Candidate profiles and manifestos can be reviewed on the candidates page before submitting your decision.</li>
+                        <li>Election results will become visible based on election policy (live or after polls close).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CollegeVote &copy; 2026. Student Democracy System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/student.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initStudentDashboard);
+    </script>
+</body>
+</html>

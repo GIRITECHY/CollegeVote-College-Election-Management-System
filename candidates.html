@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates — CollegeVote</title>
+    <meta name="description" content="View candidates and cast your vote in the student council election.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🗳️</span> CollegeVote
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <div class="navbar-nav">
+                <a href="/student-dashboard.html">Dashboard</a>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1 id="election-title" style="margin-bottom: 6px;">Loading Candidates...</h1>
+                    <p>Review candidate profiles, departments, and manifestos before casting your vote.</p>
+                </div>
+                <div id="election-status-display">
+                    <span class="badge badge-draft">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Candidates Grid Container -->
+            <div id="candidates-container">
+                <div class="loading"><p>Loading candidates list...</p></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CollegeVote &copy; 2026. Every Vote Counts.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/student.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initCandidatesPage);
+    </script>
+</body>
+</html>

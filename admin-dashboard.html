@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — CollegeVote</title>
+    <meta name="description" content="CollegeVote Administrator Control Center for managing elections, candidates, students, and results.">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .admin-tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .admin-tab-btn:hover {
+            color: var(--primary);
+        }
+        .admin-tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(37, 99, 235, 0.04);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🛡️</span> CollegeVote Admin
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <div class="navbar-nav">
+                <span style="font-size: 0.85rem; color: var(--text-secondary); margin-right: 8px;">
+                    Signed in as <strong id="admin-name">Admin</strong>
+                </span>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Election Administration Console</h1>
+                <p>Manage all aspects of college elections, candidates, student rosters, and view real-time tallies.</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="admin-nav-tabs">
+                <button class="admin-tab-btn active" onclick="switchTab('overview', this)">📊 Overview</button>
+                <button class="admin-tab-btn" onclick="switchTab('elections', this)">🗳️ Elections</button>
+                <button class="admin-tab-btn" onclick="switchTab('candidates', this)">👥 Candidates</button>
+                <button class="admin-tab-btn" onclick="switchTab('students', this)">🎓 Students</button>
+            </div>
+
+            <!-- TAB 1: OVERVIEW & STATS -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-label">Active Students</div>
+                        <div id="stat-total-students" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">Total Candidates</div>
+                        <div id="stat-total-candidates" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">Total Votes Cast</div>
+                        <div id="stat-total-votes" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">Election Status</div>
+                        <div id="stat-election-status" class="stat-value" style="font-size: 1.15rem; margin-top: 6px;">
+                            <span class="badge badge-draft">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-24">
+                    <div class="card-header">Quick Actions</div>
+                    <div class="card-body">
+                        <div class="btn-group">
+                            <button onclick="switchTab('elections', document.querySelectorAll('.admin-tab-btn')[1]); openModal('add-election-modal')" class="btn btn-primary">
+                                + Create New Election
+                            </button>
+                            <button onclick="switchTab('candidates', document.querySelectorAll('.admin-tab-btn')[2]); openModal('add-candidate-modal')" class="btn btn-secondary">
+                                + Add Candidate
+                            </button>
+                            <button onclick="switchTab('students', document.querySelectorAll('.admin-tab-btn')[3]); openModal('add-student-modal')" class="btn btn-secondary">
+                                + Add Student
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ELECTIONS MANAGEMENT -->
+            <div id="tab-elections" class="tab-content">
+                <div id="election-message"></div>
+                <div class="actions-row">
+                    <h2>Elections</h2>
+                    <button class="btn btn-primary" onclick="openModal('add-election-modal')">+ Create Election</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Counts</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="elections-table-body">
+                                <tr><td colspan="6" class="loading">Loading elections...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: CANDIDATES MANAGEMENT -->
+            <div id="tab-candidates" class="tab-content">
+                <div id="candidate-message"></div>
+                <div class="actions-row">
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <h2>Candidates</h2>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="filter-election" style="font-size: 0.85rem; font-weight: 500;">Filter:</label>
+                            <select id="filter-election" class="form-control" style="width: auto; min-width: 200px;">
+                                <option value="">All Elections</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('add-candidate-modal')">+ Add Candidate</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candidates-table-body">
+                                <tr><td colspan="5" class="loading">Loading candidates...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: STUDENTS MANAGEMENT -->
+            <div id="tab-students" class="tab-content">
+                <div id="student-message"></div>
+                <div class="actions-row">
+                    <div class="search-bar">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search by name, ID or department...">
+                        <button id="search-btn" class="btn btn-secondary">Search</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('add-student-modal')">+ Add Student</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table-body">
+                                <tr><td colspan="5" class="loading">Loading students...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============================================ -->
+    <!-- MODALS -->
+    <!-- ============================================ -->
+
+    <!-- Modal: Add Election -->
+    <div id="add-election-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create New Election</h3>
+                <button class="modal-close" onclick="closeModal('add-election-modal')">&times;</button>
+            </div>
+            <form id="add-election-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="election-title">Election Title *</label>
+                        <input type="text" id="election-title" class="form-control" required placeholder="e.g. Student Council President 2026">
+                    </div>
+                    <div class="form-group">
+                        <label for="election-description">Description</label>
+                        <textarea id="election-description" class="form-control" placeholder="Provide background or rules regarding this election"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="election-start">Start Time *</label>
+                        <input type="datetime-local" id="election-start" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="election-end">End Time *</label>
+                        <input type="datetime-local" id="election-end" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="election-visibility">Results Visibility</label>
+                        <select id="election-visibility" class="form-control">
+                            <option value="after_close">Display results after election closes</option>
+                            <option value="live">Display results live as votes come in</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-election-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Election</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Election -->
+    <div id="edit-election-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Election</h3>
+                <button class="modal-close" onclick="closeModal('edit-election-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-election-id">
+                <div class="form-group">
+                    <label for="edit-election-title">Election Title *</label>
+                    <input type="text" id="edit-election-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-election-description">Description</label>
+                    <textarea id="edit-election-description" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-election-start">Start Time *</label>
+                    <input type="datetime-local" id="edit-election-start" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-election-end">End Time *</label>
+                    <input type="datetime-local" id="edit-election-end" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-election-visibility">Results Visibility</label>
+                    <select id="edit-election-visibility" class="form-control">
+                        <option value="after_close">Display results after election closes</option>
+                        <option value="live">Display results live as votes come in</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('edit-election-modal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditElection()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Candidate -->
+    <div id="add-candidate-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Candidate</h3>
+                <button class="modal-close" onclick="closeModal('add-candidate-modal')">&times;</button>
+            </div>
+            <form id="add-candidate-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="candidate-election">Target Election *</label>
+                        <select id="candidate-election" class="form-control" required>
+                            <option value="">Select an election</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="candidate-name">Candidate Name *</label>
+                        <input type="text" id="candidate-name" class="form-control" required placeholder="Full Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidate-department">Department *</label>
+                        <input type="text" id="candidate-department" class="form-control" required placeholder="e.g. Computer Science">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidate-position">Contesting Position *</label>
+                        <input type="text" id="candidate-position" class="form-control" required placeholder="e.g. President">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidate-description">Manifesto / Bio</label>
+                        <textarea id="candidate-description" class="form-control" placeholder="Candidate campaign promises or background"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="candidate-photo">Photo URL (optional)</label>
+                        <input type="url" id="candidate-photo" class="form-control" placeholder="https://example.com/photo.jpg">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-candidate-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Candidate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Candidate -->
+    <div id="edit-candidate-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Candidate</h3>
+                <button class="modal-close" onclick="closeModal('edit-candidate-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-candidate-id">
+                <div class="form-group">
+                    <label for="edit-candidate-name">Candidate Name *</label>
+                    <input type="text" id="edit-candidate-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-candidate-department">Department *</label>
+                    <input type="text" id="edit-candidate-department" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-candidate-position">Contesting Position *</label>
+                    <input type="text" id="edit-candidate-position" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-candidate-description">Manifesto / Bio</label>
+                    <textarea id="edit-candidate-description" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-candidate-photo">Photo URL (optional)</label>
+                    <input type="url" id="edit-candidate-photo" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('edit-candidate-modal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditCandidate()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Student -->
+    <div id="add-student-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Student</h3>
+                <button class="modal-close" onclick="closeModal('add-student-modal')">&times;</button>
+            </div>
+            <form id="add-student-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-student-id">Student ID *</label>
+                        <input type="text" id="new-student-id" class="form-control" required placeholder="e.g. STU006">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-student-name">Full Name *</label>
+                        <input type="text" id="new-student-name" class="form-control" required placeholder="Student Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-student-dept">Department *</label>
+                        <input type="text" id="new-student-dept" class="form-control" required placeholder="e.g. Information Technology">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-student-password">Initial Password *</label>
+                        <input type="password" id="new-student-password" class="form-control" required minlength="6" placeholder="At least 6 characters">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-student-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Student -->
+    <div id="edit-student-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Student</h3>
+                <button class="modal-close" onclick="closeModal('edit-student-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-student-id">
+                <div class="form-group">
+                    <label for="edit-student-name">Full Name *</label>
+                    <input type="text" id="edit-student-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-student-dept">Department *</label>
+                    <input type="text" id="edit-student-dept" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-student-password">Reset Password (leave empty to keep current)</label>
+                    <input type="password" id="edit-student-password" class="form-control" placeholder="New password (optional)">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('edit-student-modal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditStudent()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CollegeVote Administrator Dashboard &copy; 2026.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+        function switchTab(tabName, tabBtn) {
+            document.querySelectorAll('.tab-content').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.admin-tab-btn').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            var target = document.getElementById('tab-' + tabName);
+            if (target) target.classList.add('active');
+            if (tabBtn) tabBtn.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initAdminDashboard();
+            await initManageElections();
+            await initManageCandidates();
+            await initManageStudents();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results — CollegeVote</title>
+    <meta name="description" content="View verified student election results, vote distributions, and winner announcements.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🗳️</span> CollegeVote
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <div class="navbar-nav">
+                <a href="/index.html">Home</a>
+                <a href="/student-login.html">Student Portal</a>
+                <a href="/admin-login.html">Admin Portal</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1 id="election-title" style="margin-bottom: 6px;">Election Results</h1>
+                    <p id="election-desc" style="color: var(--text-secondary); margin-bottom: 4px;">Verified electoral results and voting metrics.</p>
+                    <p id="election-timing" style="font-size: 0.8rem; color: var(--text-light); margin: 0;"></p>
+                </div>
+                <div id="election-status">
+                    <span class="badge badge-draft">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Results Container -->
+            <div id="results-container">
+                <div class="loading"><p>Loading election results...</p></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CollegeVote &copy; 2026. Certified Transparent Electoral Tallies.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/results.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initResultsPage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Vote — CollegeVote</title>
+    <meta name="description" content="Review and confirm your candidate selection.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🗳️</span> CollegeVote
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <div class="navbar-nav">
+                <a href="/student-dashboard.html">Dashboard</a>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <div style="max-width: 600px; margin: 30px auto;">
+                <div id="vote-message"></div>
+
+                <!-- Confirmation Form Card -->
+                <div id="vote-form-section" class="card">
+                    <div class="card-header">
+                        <span style="font-size: 1.1rem; font-weight: 700;">Confirm Your Vote</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                            Please review your chosen candidate carefully before submitting. Once cast, your ballot cannot be edited or rescinded.
+                        </p>
+
+                        <div class="card mb-24" style="background: var(--bg-light); border: 2px solid var(--primary-light);">
+                            <div class="card-body">
+                                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--primary); font-weight: 600;">Selected Candidate</div>
+                                <h2 id="candidate-name" style="font-size: 1.4rem; color: var(--text-primary); margin: 6px 0 8px;">-</h2>
+                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                                    <strong>Department:</strong> <span id="candidate-department">-</span> &nbsp;|&nbsp; 
+                                    <strong>Position:</strong> <span id="candidate-position">-</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" style="font-size: 0.85rem;">
+                            ⚠️ <strong>Important:</strong> You are entitled to one vote only. By clicking "Confirm Vote", your selection is permanently committed to the electoral ledger.
+                        </div>
+
+                        <div class="btn-group" style="margin-top: 24px; justify-content: flex-end;">
+                            <button id="cancel-vote-btn" class="btn btn-secondary">Cancel & Choose Another</button>
+                            <button id="confirm-vote-btn" class="btn btn-primary">Confirm Vote</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Screen Section (Initially Hidden) -->
+                <div id="vote-success-section" class="card hidden" style="text-align: center; border-color: #a7f3d0; background: #f0fdf4;">
+                    <div class="card-body" style="padding: 48px 24px;">
+                        <div style="font-size: 3.5rem; margin-bottom: 16px;">🎉</div>
+                        <h2 style="color: #065f46; font-size: 1.5rem; margin-bottom: 12px;">Vote Successfully Cast!</h2>
+                        <p style="color: #047857; max-width: 440px; margin: 0 auto 24px; font-size: 0.95rem;">
+                            Thank you for participating in your college democracy. Your vote has been securely recorded.
+                        </p>
+                        <div class="btn-group" style="justify-content: center;">
+                            <a href="/student-dashboard.html" class="btn btn-primary">Return to Dashboard</a>
+                            <a href="/results.html" class="btn btn-secondary">View Election Results</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CollegeVote &copy; 2026. Tamper-Proof Voting Platform.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/voting.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initVotePage);
+    </script>
+</body>
+</html>

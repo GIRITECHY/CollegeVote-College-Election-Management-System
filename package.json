@@ -1,0 +1,25 @@
+{
+  "name": "collegevote",
+  "version": "1.0.0",
+  "description": "CollegeVote - College Election Management System",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "vercel:dev": "vercel dev",
+    "test": "node -e \"const { testConnection } = require('./lib/db'); testConnection().then(c => { console.log('DB OK:', c); process.exit(c ? 0 : 1); });\""
+  },
+  "keywords": [
+    "election",
+    "voting",
+    "college"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "mysql2": "^3.24.6",
+    "uuid": "^14.0.3"
+  }
+}

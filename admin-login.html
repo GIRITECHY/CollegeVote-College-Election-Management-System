@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login — CollegeVote</title>
+    <meta name="description" content="Administrator authentication portal for managing elections, candidates, and students.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/index.html" class="navbar-brand">
+                <span>🗳️</span> CollegeVote
+            </a>
+            <div class="navbar-nav">
+                <a href="/index.html">Home</a>
+                <a href="/student-login.html">Student Portal</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            <div class="login-container">
+                <div class="login-card">
+                    <h2>Admin Portal</h2>
+                    <p class="login-subtitle">Sign in to manage elections, candidates & results</p>
+
+                    <div id="login-message"></div>
+
+                    <form id="admin-login-form">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" class="form-control" placeholder="e.g. admin" required autocomplete="username">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Enter admin password" required autocomplete="current-password">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                            Sign In as Admin
+                        </button>
+                    </form>
+
+                    <div class="card" style="margin-top: 24px; background: var(--bg-gray); border-color: var(--border);">
+                        <div class="card-body" style="padding: 14px; font-size: 0.8rem;">
+                            <strong>Default Admin Credentials:</strong>
+                            <div style="margin-top: 4px; color: var(--text-secondary);">
+                                Username: <code style="background: white; padding: 2px 4px; border-radius: 3px;">admin</code><br>
+                                Password: <code style="background: white; padding: 2px 4px; border-radius: 3px;">admin123</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-secondary);">
+                        Are you a student? <a href="/student-login.html">Student Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CollegeVote &copy; 2026. Administrator Access.</p>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initAdminLogin);
+    </script>
+</body>
+</html>
